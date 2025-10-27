@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:43:17 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/27 17:35:14 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/27 17:35:58 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ pad_input(const uint8_t *input, size_t input_length)
 		};
 
 	memcpy(padded_input, input, input_length);
-	padded_input[input_length] = 0x80; // ajouter le bit '1'
+	padded_input[input_length] = 0x80; // add one bit '1'
 
 	// Fill with '0' bits up to the required length
 	memset(padded_input + input_length + 1, 0, pad_len - input_length - 1);
