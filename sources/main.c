@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/26 22:17:44 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/27 11:21:51 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ main(void)
 	printf("-- OR:\n");
 
 	bcopy("Hello, World!!!", word_1, 16);
-	bcopy("I miss you!!!", word_2, 16);
+	bcopy("I miss you too!", word_2, 16);
 
 	print_word_bin(word_1);
 	print_word_bin(word_2);
@@ -131,7 +131,7 @@ main(void)
 	printf("-- AND:\n");
 
 	bcopy("Hello, World!!!", word_1, 16);
-	bcopy("I miss you!!!", word_2, 16);
+	bcopy("I miss you too!", word_2, 16);
 
 	print_word_bin(word_1);
 	print_word_bin(word_2);
@@ -143,7 +143,7 @@ main(void)
 	printf("-- XOR:\n");
 
 	bcopy("Hello, World!!!", word_1, 16);
-	bcopy("I miss you!!!", word_2, 16);
+	bcopy("I miss you too!", word_2, 16);
 
 	print_word_bin(word_1);
 	print_word_bin(word_2);
@@ -155,7 +155,7 @@ main(void)
 	printf("-- NOT:\n");
 
 	bcopy("Hello, World!!!", word_1, 16);
-	bcopy("I miss you!!!", word_2, 16);
+	bcopy("I miss you too!", word_2, 16);
 
 	print_word_bin(word_1);
 	print_word_bin(word_not(word_1));
@@ -168,7 +168,7 @@ main(void)
 	printf("-- RLEFT:\n");
 
 	bcopy("Hello, World!!!", word_1, 16);
-	bcopy("I miss you!!!", word_2, 16);
+	bcopy("I miss you too!", word_2, 16);
 
 	print_word_bin(word_1);
 	print_word_bin(word_left_rotate(word_1, 2));
@@ -183,7 +183,7 @@ main(void)
 	printf("-- RRIGHT:\n");
 
 	bcopy("Hello, World!!!", word_1, 16);
-	bcopy("I miss you!!!", word_2, 16);
+	bcopy("I miss you too!", word_2, 16);
 
 	print_word_bin(word_1);
 	print_word_bin(word_right_rotate(word_1, 2));
