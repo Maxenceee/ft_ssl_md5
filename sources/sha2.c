@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 13:05:07 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 16:55:03 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 19:50:03 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ pad_input(const uint8_t *input, size_t input_length, size_t *new_length)
 	return (padded_input);
 }
 
-static uint32_t
+static inline uint32_t
 lecpy32(uint32_t w)
 {
 	return ((w & 0x000000FF) << 24) |
