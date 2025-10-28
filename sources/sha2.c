@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 13:05:07 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 16:38:46 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 16:55:03 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,10 +122,21 @@ pad_input(const uint8_t *input, size_t input_length, size_t *new_length)
 
 	// Add the original length in bits as a 64-bit little-endian integer at the end
 	uint64_t bit_len = (uint64_t)input_length * 8;
-	memcpy(padded_input + pad_len, &bit_len, 8);
+	for (int i = 0; i < 8; i++) {
+		padded_input[pad_len + 7 - i] = (uint8_t)(bit_len >> (i * 8));
+	}
 
 	*new_length = total_length;
 	return (padded_input);
+}
+
+static uint32_t
+lecpy32(uint32_t w)
+{
+	return ((w & 0x000000FF) << 24) |
+			((w & 0x0000FF00) << 8) |
+			((w & 0x00FF0000) >> 8) |
+			((w & 0xFF000000) >> 24);
 }
 
 int
@@ -170,7 +181,7 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 		 */
 		for (size_t j = 0; j < 16; j++)
 		{
-			w[j] = *(uint32_t*)(chunk_data + j*4);
+			w[j] = lecpy32(*(uint32_t *)(chunk_data + j*4));
 		}
 		/**
 		 * Fill the remaining words W[16..63] using the formula 
@@ -203,7 +214,7 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 		for (size_t i = 0; i < 64; i++)
 		{
 			word_t T1 = h + bsigma1(e) + choice(e, f, g) + precomputed_fractional_part_of_prime_sqrt[i] + w[i];
-			word_t T2 = bsigma0(e) + majority(a, b, c);
+			word_t T2 = bsigma0(a) + majority(a, b, c);
 
 			h = g;
 			g = f;
@@ -229,14 +240,19 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 
 	free(padded_input);
 
-	memcpy(output + 0, &H0, 4);
-	memcpy(output + 4, &H1, 4);
-	memcpy(output + 8, &H2, 4);
-	memcpy(output + 12, &H3, 4);
-	memcpy(output + 16, &H4, 4);
-	memcpy(output + 20, &H5, 4);
-	memcpy(output + 24, &H6, 4);
-	memcpy(output + 28, &H7, 4);
-		
+	uint32_t final_hash[] =
+	{
+		lecpy32(H0),
+		lecpy32(H1),
+		lecpy32(H2),
+		lecpy32(H3),
+		lecpy32(H4),
+		lecpy32(H5),
+		lecpy32(H6),
+		lecpy32(H7),
+	};
+
+	memcpy(output, final_hash, SHA256_HASH_LENGTH);
+
 	return (0);
 }

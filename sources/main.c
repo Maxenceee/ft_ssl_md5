@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 16:40:05 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 17:01:01 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 #include "md5.h"
 #include "sha2.h"
 
-#define F_H_MD5			0x001
-#define F_H_SHA2_256	0x002
-#define F_H_MASK		0x0FF
+#define F_H_MD5			0x01
+#define F_H_SHA2_256	0x02
+#define F_H_MASK		0xFF
 
-#define F_ECHO		0x010
-#define F_QUIET		0x020
-#define F_REVERSE	0x040
-#define F_STRING	0x080
+#define F_ECHO		0x0100
+#define F_QUIET		0x0200
+#define F_REVERSE	0x0400
+#define F_STRING	0x0800
 
 static void
 usage(void)
@@ -96,7 +96,7 @@ read_and_hash(const char *filename, int cflags)
 			(void)printf("MD5 ");
 			break;
 		case F_H_SHA2_256:
-			(void)printf("SHA2-256 ");
+			(void)printf("SHA256 ");
 			break;
 		}
 		printf("(%s) = ", filename);
