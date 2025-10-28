@@ -8,21 +8,18 @@ DEFAULT="\033[0m"
 
 test_prog="./ft_ssl"
 
-# Normalize outputs by removing the program-name prefix like "md5: " or "ft_ssl: "
 normalize() {
-	# read from stdin, remove up-to-first-colon+space (e.g. "md5: ")
 	sed -E 's/^[^:]+: //'
 }
 
 echo -e "\n${YELLOW}--- md5 tests (refactor) ---${DEFAULT}\n"
 
-# Counters
 total=0
 passed=0
 failed=0
 
+# run_test "label" "expected_cmd" "actual_cmd"
 run_test() {
-    # run_test "label" "expected_cmd" "actual_cmd"
     label="$1"
     expected_cmd="$2"
     actual_cmd="$3"
@@ -49,7 +46,7 @@ run_test() {
 # helper to run the same template replacing md5 with $test_prog md5 for actual
 run_template() {
     label="$1"
-    template="$2" # e.g. "echo -n 'x' | md5 -q"
+    template="$2"
     # expected uses system md5, actual uses $test_prog md5
     expected_cmd="$template"
     # replace only first occurrence of 'md5' with "$test_prog md5"
