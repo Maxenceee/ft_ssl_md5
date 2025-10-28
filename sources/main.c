@@ -6,17 +6,22 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 12:54:20 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 16:40:05 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "files.h"
 #include "md5.h"
+#include "sha2.h"
 
-#define F_ECHO		0x01
-#define F_QUIET		0x02
-#define F_REVERSE	0x04
-#define F_STRING	0x08
+#define F_H_MD5			0x001
+#define F_H_SHA2_256	0x002
+#define F_H_MASK		0x0FF
+
+#define F_ECHO		0x010
+#define F_QUIET		0x020
+#define F_REVERSE	0x040
+#define F_STRING	0x080
 
 static void
 usage(void)
@@ -51,7 +56,7 @@ read_and_hash(const char *filename, int cflags)
 
 	if (cflags & F_STRING)
 	{
-		input = (uint8_t *)filename;
+		input = (uint8_t *)strdup(filename);
 		size = strlen(filename);
 	}
 	else
@@ -82,15 +87,38 @@ read_and_hash(const char *filename, int cflags)
 
 	if (cflags & F_ECHO && !(cflags & F_STRING))
 		(void)printf("%s", input);
-	
-	uint8_t output[HASH_LENGTH];
-
-	md5hash(input, size, output);
 
 	if (filename && !(cflags & F_STRING) && !(cflags & F_ECHO) && !(cflags & F_QUIET) && !(cflags & F_REVERSE))
-		printf("MD5 (%s) = ", filename);
+	{
+		switch (cflags & F_H_MASK)
+		{
+		case F_H_MD5:
+			(void)printf("MD5 ");
+			break;
+		case F_H_SHA2_256:
+			(void)printf("SHA2-256 ");
+			break;
+		}
+		printf("(%s) = ", filename);
+	}
 
-	print_hash(output, HASH_LENGTH);
+	switch (cflags & F_H_MASK)
+	{
+	case F_H_MD5:
+		{
+			uint8_t output[MD5_HASH_LENGTH];
+			md5hash(input, size, output);
+			print_hash(output, MD5_HASH_LENGTH);
+		}
+		break;
+	case F_H_SHA2_256:
+		{
+			uint8_t output[SHA256_HASH_LENGTH];
+			sha256hash(input, size, output);
+			print_hash(output, SHA256_HASH_LENGTH);
+		}
+		break;
+	}
 
 	if (filename && cflags & F_REVERSE && !(cflags & F_STRING) && !(cflags & F_ECHO) && !(cflags & F_QUIET))
 	{
@@ -100,19 +128,25 @@ read_and_hash(const char *filename, int cflags)
 	return (0);
 }
 
-static char*
-extract_command(const int argc, char **argv)
+static int
+extract_command(const int argc, char **argv, int *cflags)
 {
 	if (argc < 2)
-		return (NULL);
+		return (1);
 
 	char *command = argv[1];
 	if (strcmp(command, "md5") == 0 || strcmp(command, "md5sum") == 0)
-		return (command);
+	{
+		*cflags |= F_H_MD5;
+		return (0);
+	}
 	if (strcmp(command, "sha256") == 0)
-		return (command);
+	{
+		*cflags |= F_H_SHA2_256;
+		return (0);
+	}
 
-	return (NULL);
+	return (1);
 }
 
 int
@@ -123,7 +157,7 @@ main(int argc, char **argv)
 	char *target = NULL;
 	int cflags = 0;
 
-	if ((command = extract_command(argc, argv)) == NULL)
+	if (extract_command(argc, argv, &cflags))
 		usage();
 
 	optind = 2; // Skip the command argument

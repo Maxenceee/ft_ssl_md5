@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:52:33 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 13:03:16 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 16:35:45 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,10 @@
 #include <limits.h>
 
 #define WORD_LENGTH 4 // 32 bits
-#define HASH_LENGTH 16 // 128 bits
+#define MD5_HASH_LENGTH 16 // 128 bits
 #define CHUNK_LENGTH 64 // 512 bits
 
 typedef uint32_t	word_t; // 32 bits
-typedef uint32_t	block_t[WORD_LENGTH]; // 128 bits
-
-struct data_s
-{
-	uint8_t *data;
-	size_t length;
-};
 
 /**
  * @brief Construct a new hash object from the given input using the MD5 algorithm.
@@ -42,6 +35,6 @@ struct data_s
  * 
  * @return The function returns a non-zero value on failure.
  */
-int md5hash(const uint8_t *input, size_t input_length, uint8_t output[HASH_LENGTH]);
+int md5hash(const uint8_t *input, size_t input_length, uint8_t output[MD5_HASH_LENGTH]);
 
 #endif /* MD5_H */

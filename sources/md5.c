@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:43:17 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/27 17:35:58 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 16:38:52 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,11 @@ const uint8_t precomputed_round_shift[] = {
 static inline word_t
 word_left_rotate(word_t x, uint8_t bits)
 {
-    return (x << bits) | (x >> (32 - bits));
+	return (x << bits) | (x >> (32 - bits));
 }
 
-static struct data_s
-pad_input(const uint8_t *input, size_t input_length)
+static uint8_t*
+pad_input(const uint8_t *input, size_t input_length, size_t *new_length)
 {
 	/**
 	 * The padding process for MD5 involves the following steps:
@@ -79,10 +79,10 @@ pad_input(const uint8_t *input, size_t input_length)
 	size_t total_length = pad_len + 8;
 	uint8_t *padded_input = malloc(total_length);
 	if (!padded_input)
-		return (struct data_s){
-			.data = NULL,
-			.length = 0
-		};
+	{
+		*new_length = 0;
+		return (NULL);
+	}
 
 	memcpy(padded_input, input, input_length);
 	padded_input[input_length] = 0x80; // add one bit '1'
@@ -94,14 +94,12 @@ pad_input(const uint8_t *input, size_t input_length)
 	uint64_t bit_len = (uint64_t)input_length * 8;
 	memcpy(padded_input + pad_len, &bit_len, 8);
 
-	return (struct data_s){
-		.data = padded_input,
-		.length = total_length
-	};
+	*new_length = total_length;
+	return (padded_input);
 }
 
 int
-md5hash(const uint8_t *input, size_t input_length, uint8_t output[HASH_LENGTH])
+md5hash(const uint8_t *input, size_t input_length, uint8_t output[MD5_HASH_LENGTH])
 {
 	if (NULL == output)
 	{
@@ -116,17 +114,18 @@ md5hash(const uint8_t *input, size_t input_length, uint8_t output[HASH_LENGTH])
 	uint32_t C0 = 0x98badcfe;
 	uint32_t D0 = 0x10325476;
 
-	struct data_s padded_input = pad_input(input, input_length);
-	if (!padded_input.data)
+	size_t padded_input_length;
+	uint8_t *padded_input = pad_input(input, input_length, &padded_input_length);
+	if (!padded_input)
 		return (1);
 
 	/**
 	 * The MD5 algorithm processes the input in successive 512-bit (64-byte) chunks.
 	 * For each chunk, it performs a series of operations that update the state variables.
 	 */
-	for (size_t chunk = 0; chunk < padded_input.length; chunk += CHUNK_LENGTH)
+	for (size_t chunk = 0; chunk < padded_input_length; chunk += CHUNK_LENGTH)
 	{
-		uint8_t *chunk_data = padded_input.data + chunk;
+		uint8_t *chunk_data = padded_input + chunk;
 
 		/**
 		 * The chunk is divided into sixteen 32-bit words M[0..15] in little-endian format.
@@ -192,14 +191,14 @@ md5hash(const uint8_t *input, size_t input_length, uint8_t output[HASH_LENGTH])
 		}
 
 		// After processing the chunk, add the chunk's hash to the result so far
-		
+
 		A0 += a;
 		B0 += b;
 		C0 += c;
 		D0 += d;
 	}
 
-	free(padded_input.data);
+	free(padded_input);
 
 	memcpy(output +  0, &A0, 4);
 	memcpy(output +  4, &B0, 4);
