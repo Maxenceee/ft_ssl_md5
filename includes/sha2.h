@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 13:05:28 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 13:06:44 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 13:08:21 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#define HASH_LENGTH 16 // 128 bits
+#define HASH_LENGTH 32 // 256 bits
 
 /**
  * @brief Construct a new hash object from the given input using the MD5 algorithm.
