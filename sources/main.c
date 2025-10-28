@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 17:01:01 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 17:02:33 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ extract_command(const int argc, char **argv, int *cflags)
 		return (1);
 
 	char *command = argv[1];
-	if (strcmp(command, "md5") == 0 || strcmp(command, "md5sum") == 0)
+	if (strcmp(command, "md5") == 0)
 	{
 		*cflags |= F_H_MD5;
 		return (0);
