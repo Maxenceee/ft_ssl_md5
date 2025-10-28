@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 17:16:57 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/27 17:18:02 by mgama            ###   ########.fr       */
+/*   Updated: 2025/10/28 12:42:39 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,10 @@ ft_read_file(int fd, unsigned char *file, size_t *rsize)
 	*rsize = size;
 	free(buff);
 	return (file);
+}
+
+void
+ft_perror(const char *msg)
+{
+	(void)fprintf(stderr, FT_PREFIX "%s: %s\n", msg, strerror(errno));
 }
