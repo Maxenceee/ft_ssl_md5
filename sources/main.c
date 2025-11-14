@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 17:02:33 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/14 14:46:29 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@
 #define F_QUIET		0x0200
 #define F_REVERSE	0x0400
 #define F_STRING	0x0800
+
+#ifdef __APPLE__
+#define CMD_SPC " "
+#else
+#define CMD_SPC ""
+#endif /* __APPLE__ */
 
 static void
 usage(void)
@@ -93,13 +99,13 @@ read_and_hash(const char *filename, int cflags)
 		switch (cflags & F_H_MASK)
 		{
 		case F_H_MD5:
-			(void)printf("MD5 ");
+			(void)printf("MD5");
 			break;
 		case F_H_SHA2_256:
-			(void)printf("SHA256 ");
+			(void)printf("SHA256");
 			break;
 		}
-		printf("(%s) = ", filename);
+		printf(CMD_SPC "(%s)" CMD_SPC "= ", filename);
 	}
 
 	switch (cflags & F_H_MASK)
@@ -153,7 +159,6 @@ int
 main(int argc, char **argv)
 {
 	char c;
-	char *command;
 	char *target = NULL;
 	int cflags = 0;
 
@@ -191,7 +196,7 @@ main(int argc, char **argv)
 		return (read_and_hash(target, cflags));
 	}
 
-	for (size_t i = optind; i < argc; i++)
+	for (int i = optind; i < argc; i++)
 	{
 		if (read_and_hash(argv[i], cflags))
 			return_code = 1;
