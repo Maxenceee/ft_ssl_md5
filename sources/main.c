@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/14 14:46:29 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/15 11:43:33 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ read_and_hash(const char *filename, int cflags)
 			{
 				ft_perror(filename);
 				return (1);
-			}	
+			}
 		}
 
 		input = ft_read_file(fd, NULL, &size);
@@ -107,6 +107,21 @@ read_and_hash(const char *filename, int cflags)
 		}
 		printf(CMD_SPC "(%s)" CMD_SPC "= ", filename);
 	}
+#ifndef __APPLE__
+	else
+	{
+		switch (cflags & F_H_MASK)
+		{
+		case F_H_MD5:
+			(void)printf("MD5");
+			break;
+		case F_H_SHA2_256:
+			(void)printf("SHA256");
+			break;
+		}
+		printf(CMD_SPC "(%s)" CMD_SPC "= ", "stdin");
+	}
+#endif /* __APPLE__ */
 
 	switch (cflags & F_H_MASK)
 	{
