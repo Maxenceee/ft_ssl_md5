@@ -6,12 +6,12 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/16 16:43:21 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 17:21:53 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "files.h"
-#include "md5.h"
+#include "md.h"
 #include "sha2.h"
 
 #define F_ECHO		0x0100
@@ -28,7 +28,10 @@ struct command_t
 
 static const struct command_t commands[] = {
 	{"md5", md5hash, MD5_HASH_LENGTH},
+	{"sha224", sha224hash, SHA224_HASH_LENGTH},
 	{"sha256", sha256hash, SHA256_HASH_LENGTH},
+	{"sha384", sha384hash, SHA384_HASH_LENGTH},
+	{"sha512", sha512hash, SHA512_HASH_LENGTH},
 	{0}
 };
 
@@ -38,8 +41,10 @@ usage(void)
 	(void)fprintf(stderr, "Usage: ft_ssl <command> [-pqr] [-s string] [files ...]\n");
 	(void)fprintf(stderr, "\n");
 	(void)fprintf(stderr, "Commands:\n");
-	(void)fprintf(stderr, "  md5       Compute MD5 hash\n");
-	(void)fprintf(stderr, "  sha256    Compute SHA-256 hash\n");
+	for (size_t i = 0; commands[i].name != NULL; i++)
+	{
+		(void)fprintf(stderr, "  %-8s  Compute %s hash\n", commands[i].name, commands[i].name);
+	}
 	(void)fprintf(stderr, "Options:\n");
 	(void)fprintf(stderr, "  -p        Echo STDIN to STDOUT and append the checksum to STDOUT\n");
 	(void)fprintf(stderr, "  -q        Quiet mode\n");

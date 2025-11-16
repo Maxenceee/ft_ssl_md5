@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   md5.h                                              :+:      :+:    :+:   */
+/*   md.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:52:33 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/16 16:16:56 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 17:14:43 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#define WORD_LENGTH 4 // 32 bits
 #define MD5_HASH_LENGTH 16 // 128 bits
-#define CHUNK_LENGTH 64 // 512 bits
-
-typedef uint32_t	word_t; // 32 bits
 
 /**
  * @brief Construct a new hash object from the given input using the MD5 algorithm.

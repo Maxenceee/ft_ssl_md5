@@ -1,26 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sha2.c                                             :+:      :+:    :+:   */
+/*   sha224.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 13:05:07 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/16 16:41:00 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 17:18:29 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sha2.h"
 
+#define WORD_LENGTH 4 // 32 bits
+#define CHUNK_LENGTH 64 // 512 bits
+
+typedef uint32_t	word_t; // 32 bits
+
 /**
- * Precomputed constants for SHA-256 algorithm
+ * Precomputed constants for SHA-224 algorithm
  * These constants are derived from the fractional parts of the square roots of the first 64 prime numbers
- * and are used in the SHA-256 hash computation.
+ * and are used in the SHA-224 hash computation.
  * Which was computed as: floor(2^32 * frac(sqrt(prime(i)))) for i = 0 to 63
  * 
  * @see https://www.rfc-editor.org/rfc/rfc4634 Section 5.1
  */
-const uint32_t precomputed_fractional_part_of_prime_sqrt[] = {
+static const word_t precomputed_fractional_part_of_prime_sqrt[] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
 	0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 	0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -125,8 +130,8 @@ pad_input(const uint8_t *input, size_t input_length, size_t *new_length)
 	return (padded_input);
 }
 
-static inline uint32_t
-lecpy32(uint32_t w)
+static inline word_t
+lecpy32(word_t w)
 {
 	return ((w & 0x000000FF) << 24) |
 			((w & 0x0000FF00) << 8) |
@@ -135,7 +140,7 @@ lecpy32(uint32_t w)
 }
 
 int
-sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH_LENGTH])
+sha224hash(const uint8_t *input, size_t input_length, uint8_t output[SHA224_HASH_LENGTH])
 {
 	if (NULL == input || 0 == input_length || NULL == output)
 	{
@@ -143,16 +148,16 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 	}
 
 	/**
-	 * Initial hash values for SHA-256, as RFC 6234 specifies
+	 * Initial hash values for SHA-224, as RFC 6234 specifies
 	 */
-	uint32_t H0 = 0x6a09e667;
-	uint32_t H1 = 0xbb67ae85;
-	uint32_t H2 = 0x3c6ef372;
-	uint32_t H3 = 0xa54ff53a;
-	uint32_t H4 = 0x510e527f;
-	uint32_t H5 = 0x9b05688c;
-	uint32_t H6 = 0x1f83d9ab;
-	uint32_t H7 = 0x5be0cd19;
+	word_t H0 = 0xc1059ed8;
+	word_t H1 = 0x367cd507;
+	word_t H2 = 0x3070dd17;
+	word_t H3 = 0xf70e5939;
+	word_t H4 = 0xffc00b31;
+	word_t H5 = 0x68581511;
+	word_t H6 = 0x64f98fa7;
+	word_t H7 = 0xbefa4fa4;
 
 	size_t padded_input_length;
 	uint8_t *padded_input = pad_input(input, input_length, &padded_input_length);
@@ -160,7 +165,7 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 		return (1);
 
 	/**
-	 * The SHA-256 algorithm processes the input in successive 512-bit (64-byte) chunks.
+	 * The SHA-224 algorithm processes the input in successive 512-bit (64-byte) chunks.
 	 * For each chunk, it performs a series of operations that update the state variables.
 	 */
 	for (size_t chunk = 0; chunk < padded_input_length; chunk += CHUNK_LENGTH)
@@ -170,13 +175,13 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 		/**
 		 * The chunk is divided into sixty-four 32-bit words W[0..63] in big-endian format.
 		 */
-		uint32_t w[64];
+		word_t w[64];
 		/**
 		 * Fill the first 16 words W[0..15] with the chunk data
 		 */
 		for (size_t j = 0; j < 16; j++)
 		{
-			w[j] = lecpy32(*(uint32_t *)(chunk_data + j*4));
+			w[j] = lecpy32(*(word_t *)(chunk_data + j*4));
 		}
 		/**
 		 * Fill the remaining words W[16..63] using the formula 
@@ -203,7 +208,7 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 		word_t h = H7;
 
 		/**
-		 * The main loop of the SHA-256 algorithm, consisting of 64 operations.
+		 * The main loop of the SHA-224 algorithm, consisting of 64 operations.
 		 * This is a fixed sequence of operations that mix the input data with the state variables.
 		 */
 		for (size_t i = 0; i < 64; i++)
@@ -235,7 +240,7 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 
 	free(padded_input);
 
-	uint32_t final_hash[] =
+	word_t final_hash[] =
 	{
 		lecpy32(H0),
 		lecpy32(H1),
@@ -247,7 +252,7 @@ sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH
 		lecpy32(H7),
 	};
 
-	memcpy(output, final_hash, SHA256_HASH_LENGTH);
+	memcpy(output, final_hash, SHA224_HASH_LENGTH);
 
 	return (0);
 }

@@ -6,11 +6,16 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:43:17 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/16 16:40:34 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 17:14:39 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "md5.h"
+#include "md.h"
+
+#define WORD_LENGTH 4 // 32 bits
+#define CHUNK_LENGTH 64 // 512 bits
+
+typedef uint32_t	word_t; // 32 bits
 
 /**
  * Precomputed constants for MD5 algorithm
@@ -19,7 +24,7 @@
  * 
  * @see https://www.rfc-editor.org/rfc/rfc1321 Section 3.4
  */
-const uint32_t precomputed_integer_part_of_sines[] = {
+static const word_t precomputed_integer_part_of_sines[] = {
 	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
 	0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
 	0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
@@ -44,7 +49,7 @@ const uint32_t precomputed_integer_part_of_sines[] = {
  * 
  * @see https://www.rfc-editor.org/rfc/rfc1321 Section 3.4
  */
-const uint8_t precomputed_round_shift[] = {
+static const uint8_t precomputed_round_shift[] = {
 	7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
 	5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
 	4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
@@ -109,10 +114,10 @@ md5hash(const uint8_t *input, size_t input_length, uint8_t output[MD5_HASH_LENGT
 	/**
 	 * Initialize MD5 state variables, as per RFC 1321 section 3.3.
 	 */
-	uint32_t A0 = 0x67452301;
-	uint32_t B0 = 0xefcdab89;
-	uint32_t C0 = 0x98badcfe;
-	uint32_t D0 = 0x10325476;
+	word_t A0 = 0x67452301;
+	word_t B0 = 0xefcdab89;
+	word_t C0 = 0x98badcfe;
+	word_t D0 = 0x10325476;
 
 	size_t padded_input_length;
 	uint8_t *padded_input = pad_input(input, input_length, &padded_input_length);
@@ -130,10 +135,10 @@ md5hash(const uint8_t *input, size_t input_length, uint8_t output[MD5_HASH_LENGT
 		/**
 		 * The chunk is divided into sixteen 32-bit words M[0..15] in little-endian format.
 		 */
-		uint32_t M[16];
+		word_t M[16];
 		for (size_t j = 0; j < 16; j++)
 		{
-			M[j] = *(uint32_t*)(chunk_data + j*4);
+			M[j] = *(word_t*)(chunk_data + j*4);
 		}
 
 		/**
@@ -151,7 +156,7 @@ md5hash(const uint8_t *input, size_t input_length, uint8_t output[MD5_HASH_LENGT
 		for (size_t i = 0; i < 64; i++)
 		{
 			uint8_t g;
-			uint32_t F;
+			word_t F;
 
 			/**
 			 * The processing is divided into four rounds of 16 operations each,
@@ -181,8 +186,8 @@ md5hash(const uint8_t *input, size_t input_length, uint8_t output[MD5_HASH_LENGT
 
 			F = a + F + precomputed_integer_part_of_sines[i] + M[g];
 
-			uint32_t rotated = word_left_rotate(F, precomputed_round_shift[i]);
-			uint32_t new_b = b + rotated;
+			word_t rotated = word_left_rotate(F, precomputed_round_shift[i]);
+			word_t new_b = b + rotated;
 
 			a = d;
 			d = c;
