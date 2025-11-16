@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:43:17 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 16:38:52 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 16:40:34 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ pad_input(const uint8_t *input, size_t input_length, size_t *new_length)
 int
 md5hash(const uint8_t *input, size_t input_length, uint8_t output[MD5_HASH_LENGTH])
 {
-	if (NULL == output)
+	if (NULL == input || 0 == input_length || NULL == output)
 	{
 		return (0);
 	}

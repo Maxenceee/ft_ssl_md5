@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 13:05:07 by mgama             #+#    #+#             */
-/*   Updated: 2025/10/28 19:50:03 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 16:41:00 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,6 @@ const uint32_t precomputed_fractional_part_of_prime_sqrt[] = {
 	0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 };
-
-static inline word_t
-word_left_rotate(word_t x, uint8_t bits)
-{
-	return (x << bits) | (x >> (sizeof(x) * 8 - bits));
-}
 
 static inline word_t
 word_right_rotate(word_t x, uint8_t bits)
@@ -122,7 +116,8 @@ pad_input(const uint8_t *input, size_t input_length, size_t *new_length)
 
 	// Add the original length in bits as a 64-bit little-endian integer at the end
 	uint64_t bit_len = (uint64_t)input_length * 8;
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++)
+	{
 		padded_input[pad_len + 7 - i] = (uint8_t)(bit_len >> (i * 8));
 	}
 
@@ -142,7 +137,7 @@ lecpy32(uint32_t w)
 int
 sha256hash(const uint8_t *input, size_t input_length, uint8_t output[SHA256_HASH_LENGTH])
 {
-	if (NULL == output)
+	if (NULL == input || 0 == input_length || NULL == output)
 	{
 		return (0);
 	}

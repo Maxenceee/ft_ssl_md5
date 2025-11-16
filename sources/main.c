@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/15 11:43:33 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 16:43:21 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,23 @@
 #include "md5.h"
 #include "sha2.h"
 
-#define F_H_MD5			0x01
-#define F_H_SHA2_256	0x02
-#define F_H_MASK		0xFF
-
 #define F_ECHO		0x0100
 #define F_QUIET		0x0200
 #define F_REVERSE	0x0400
 #define F_STRING	0x0800
 
-#ifdef __APPLE__
-#define CMD_SPC " "
-#else
-#define CMD_SPC ""
-#endif /* __APPLE__ */
+struct command_t
+{
+	const char	*name;
+	int			(*handler)(const uint8_t *input, size_t input_length, uint8_t *output);
+	size_t		hash_length;
+};
+
+static const struct command_t commands[] = {
+	{"md5", md5hash, MD5_HASH_LENGTH},
+	{"sha256", sha256hash, SHA256_HASH_LENGTH},
+	{0}
+};
 
 static void
 usage(void)
@@ -55,7 +58,7 @@ print_hash(const uint8_t *hash, size_t length)
 }
 
 static int
-read_and_hash(const char *filename, int cflags)
+read_and_hash(const struct command_t *command, const char *filename, int cflags)
 {
 	size_t size = 0;
 	uint8_t *input;
@@ -63,6 +66,11 @@ read_and_hash(const char *filename, int cflags)
 	if (cflags & F_STRING)
 	{
 		input = (uint8_t *)strdup(filename);
+		if (!input)
+		{
+			ft_perror(filename);
+			return (1);
+		}
 		size = strlen(filename);
 	}
 	else
@@ -96,75 +104,52 @@ read_and_hash(const char *filename, int cflags)
 
 	if (filename && !(cflags & F_STRING) && !(cflags & F_ECHO) && !(cflags & F_QUIET) && !(cflags & F_REVERSE))
 	{
-		switch (cflags & F_H_MASK)
-		{
-		case F_H_MD5:
-			(void)printf("MD5");
-			break;
-		case F_H_SHA2_256:
-			(void)printf("SHA256");
-			break;
-		}
-		printf(CMD_SPC "(%s)" CMD_SPC "= ", filename);
+		printf("%s(%s)= ", command->name, filename);
 	}
 #ifndef __APPLE__
 	else
 	{
-		switch (cflags & F_H_MASK)
-		{
-		case F_H_MD5:
-			(void)printf("MD5");
-			break;
-		case F_H_SHA2_256:
-			(void)printf("SHA256");
-			break;
-		}
-		printf(CMD_SPC "(%s)" CMD_SPC "= ", "stdin");
+		printf("%s(%s)= ", command->name, "stdin");
 	}
 #endif /* __APPLE__ */
 
-	switch (cflags & F_H_MASK)
+	/**
+	 * The following dynamic stack allocation (VLA) is safe because
+	 * the hash lengths are small and known at compile time.
+	 */
+	uint8_t output[command->hash_length];
+
+	if (command->handler(input, size, output))
 	{
-	case F_H_MD5:
-		{
-			uint8_t output[MD5_HASH_LENGTH];
-			md5hash(input, size, output);
-			print_hash(output, MD5_HASH_LENGTH);
-		}
-		break;
-	case F_H_SHA2_256:
-		{
-			uint8_t output[SHA256_HASH_LENGTH];
-			sha256hash(input, size, output);
-			print_hash(output, SHA256_HASH_LENGTH);
-		}
-		break;
+		free(input);
+		ft_perror("Hashing failed");
+		return (1);
 	}
+	free(input);
+	print_hash(output, command->hash_length);
 
 	if (filename && cflags & F_REVERSE && !(cflags & F_STRING) && !(cflags & F_ECHO) && !(cflags & F_QUIET))
 	{
 		printf(" %s", filename);
 	}
 	(void)printf("\n");
+
 	return (0);
 }
 
 static int
-extract_command(const int argc, char **argv, int *cflags)
+validate_command(const int argc, char **argv, struct command_t *handler)
 {
 	if (argc < 2)
 		return (1);
 
-	char *command = argv[1];
-	if (strcmp(command, "md5") == 0)
+	for (size_t i = 0; commands[i].name != NULL; i++)
 	{
-		*cflags |= F_H_MD5;
-		return (0);
-	}
-	if (strcmp(command, "sha256") == 0)
-	{
-		*cflags |= F_H_SHA2_256;
-		return (0);
+		if (strcmp(argv[1], commands[i].name) == 0)
+		{
+			*handler = commands[i];
+			return (0);
+		}
 	}
 
 	return (1);
@@ -176,8 +161,9 @@ main(int argc, char **argv)
 	char c;
 	char *target = NULL;
 	int cflags = 0;
+	struct command_t command = {0};
 
-	if (extract_command(argc, argv, &cflags))
+	if (validate_command(argc, argv, &command))
 		usage();
 
 	optind = 2; // Skip the command argument
@@ -208,12 +194,12 @@ main(int argc, char **argv)
 
 	if (argc - optind == 0 || (cflags & F_ECHO) || (cflags & F_STRING))
 	{
-		return (read_and_hash(target, cflags));
+		return (read_and_hash(&command, target, cflags));
 	}
 
 	for (int i = optind; i < argc; i++)
 	{
-		if (read_and_hash(argv[i], cflags))
+		if (read_and_hash(&command, argv[i], cflags))
 			return_code = 1;
 	}
 
