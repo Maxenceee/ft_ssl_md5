@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 13:05:07 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/16 17:21:43 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/16 17:29:50 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,10 @@ pad_input(const uint8_t *input, size_t input_length, size_t *new_length)
 	/**
 	 * The padding process for SHA-2 involves the following steps:
 	 * 1. Append a single '1' bit to the end of the message.
-	 * 2. Append '0' bits until the length of the message (in bits) is congruent to 448 modulo 384.
-	 * 3. Append the original length of the message (before padding) as a 64-bit little-endian integer.
+	 * 2. Append '0' bits until the length of the message (in bits) is congruent to 896 modulo 1024.
+	 * 3. Append the original length of the message (before padding) as a 128-bit little-endian integer.
 	 * 
-	 * This ensures that the total length of the padded message is a multiple of 384 bits (64 bytes) and
+	 * This ensures that the total length of the padded message is a multiple of 1024 bits (128 bytes) and
 	 * uniquely represents the original message.
 	 */
 
@@ -168,7 +168,7 @@ sha384hash(const uint8_t *input, size_t input_length, uint8_t output[SHA384_HASH
 		return (1);
 
 	/**
-	 * The SHA-384 algorithm processes the input in successive 384-bit (64-byte) chunks.
+	 * The SHA-384 algorithm processes the input in successive 1024-bit (128-byte) chunks.
 	 * For each chunk, it performs a series of operations that update the state variables.
 	 */
 	for (size_t chunk = 0; chunk < padded_input_length; chunk += CHUNK_LENGTH)
@@ -176,7 +176,7 @@ sha384hash(const uint8_t *input, size_t input_length, uint8_t output[SHA384_HASH
 		uint8_t *chunk_data = padded_input + chunk;
 
 		/**
-		 * The chunk is divided into sixty-four 32-bit words W[0..63] in big-endian format.
+		 * The chunk is divided into sixty-four 32-bit words W[0..79] in big-endian format.
 		 */
 		word_t w[80];
 		/**
@@ -187,11 +187,11 @@ sha384hash(const uint8_t *input, size_t input_length, uint8_t output[SHA384_HASH
 			w[j] = lecpy64(*(word_t *)(chunk_data + j*8));
 		}
 		/**
-		 * Fill the remaining words W[16..63] using the formula 
+		 * Fill the remaining words W[16..79] using the formula 
 		 * W[t] = σ1(W[t-2]) + W[t-7] + σ0(W[t-15]) + W[t-16]
 		 * where σ0 and σ1 are defined as:
-		 * σ0(x) = ROTR^7(x) ⊕ ROTR^18(x) ⊕ SHR^3(x)
-		 * σ1(x) = ROTR^17(x) ⊕ ROTR^19(x) ⊕ SHR^10(x)
+		 * σ0(x) = ROTR^1(x) ⊕ ROTR^8(x) ⊕ SHR^7(x)
+		 * σ1(x) = ROTR^19(x) ⊕ ROTR^61(x) ⊕ SHR^6(x)
 		 */
 		for (size_t j = 16; j < 80; j++)
 		{
