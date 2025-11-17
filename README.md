@@ -13,7 +13,10 @@ Usage: ft_ssl <command> [-pqr] [-s string] [files ...]
 
 Commands:
   md5       Compute MD5 hash
+  sha224    Compute SHA-224 hash
   sha256    Compute SHA-256 hash
+  sha384    Compute SHA-384 hash
+  sha512    Compute SHA-512 hash
 Options:
   -p        Echo STDIN to STDOUT and append the checksum to STDOUT
   -q        Quiet mode
