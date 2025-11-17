@@ -5,11 +5,13 @@ OBJ_DIR			=	.objs
 SRCS			=	$(shell find $(MANDATORY_DIR) -name "*.c")
 
 OBJS			=	$(patsubst $(MANDATORY_DIR)%.c, $(OBJ_DIR)%.o, $(SRCS))
+DEPS			=	$(OBJS:.o=.d)
 
 HEADERS			=	$(shell find $(HEADERS_DIR) -name "*.h")
 
 CC				=	gcc
 RM				=	rm
+DEPSFLAG		=	-MMD -MP
 CFLAGS			:=	-I$(HEADERS_DIR) -I$(MANDATORY_DIR) -g3 -O0 -Wall -Wextra -Werror
 
 NAME			=	ft_ssl
@@ -22,10 +24,10 @@ DEFAULT			=	\033[0m
 UP				=	"\033[A"
 CUT				=	"\033[K"
 
-$(OBJ_DIR)/%.o: $(MANDATORY_DIR)/%.c $(HEADERS)
+$(OBJ_DIR)/%.o: $(MANDATORY_DIR)/%.c
 	@mkdir -p $(@D)
 	@echo "$(YELLOW)Compiling [$<]$(DEFAULT)"
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(DEPSFLAG) -c $< -o $@
 	@printf ${UP}${CUT}
 
 all: $(NAME)
@@ -33,6 +35,8 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $^ -o $(NAME)
 	@echo "$(GREEN)$(NAME) compiled!$(DEFAULT)"
+
+-include $(DEPS)
 
 clean:
 	@echo "$(RED)Cleaning build folder$(DEFAULT)"
