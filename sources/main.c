@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/18 14:08:48 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/18 16:14:03 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,25 @@ usage(void)
 	(void)fprintf(stderr, "  -r        Reverse the format of the output\n");
 	(void)fprintf(stderr, "  -s        Print the sum of the given string\n");
 	exit(64);
+}
+
+inline static char
+ft_toupper(unsigned char c)
+{
+	if (c >= 'a' && c <= 'z')
+		return (c - 32);
+	return (c);
+}
+
+static void
+print_hash_name(const char* name, const char* channel)
+{
+	size_t i = 0;
+	while (name[i])
+	{
+		printf("%c", ft_toupper(name[i++]));
+	}
+	printf("(%s)= ", channel);
 }
 
 static void
@@ -109,12 +128,12 @@ read_and_hash(const struct command_t *command, const char *filename, int cflags)
 
 	if (filename && !(cflags & F_STRING) && !(cflags & F_ECHO) && !(cflags & F_QUIET) && !(cflags & F_REVERSE))
 	{
-		printf("%s(%s)= ", command->name, filename);
+		print_hash_name(command->name, filename);
 	}
 #ifndef __APPLE__
 	else
 	{
-		printf("%s(%s)= ", command->name, "stdin");
+		print_hash_name(command->name, "stdin");
 	}
 #endif /* __APPLE__ */
 

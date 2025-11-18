@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 13:05:28 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/16 17:21:08 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/18 16:15:02 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#define SHA224_HASH_LENGTH 28 // 224 bits
-#define SHA256_HASH_LENGTH 32 // 256 bits
-#define SHA384_HASH_LENGTH 48 // 384 bits
-#define SHA512_HASH_LENGTH 64 // 512 bits
+#define SHA224_HASH_LENGTH 28 // 224 bits length
+#define SHA256_HASH_LENGTH 32 // 256 bits length
+#define SHA384_HASH_LENGTH 48 // 384 bits length
+#define SHA512_HASH_LENGTH 64 // 512 bits length
 
 /**
  * @brief Construct a new hash object from the given input using the SHA-224 algorithm.
