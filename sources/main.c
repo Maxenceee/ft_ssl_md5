@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 21:15:18 by mgama             #+#    #+#             */
-/*   Updated: 2025/11/16 17:21:53 by mgama            ###   ########.fr       */
+/*   Updated: 2025/11/18 14:08:48 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,7 +190,6 @@ main(int argc, char **argv)
 			target = optarg;
 			break;
 		default:
-			(void)fprintf(stderr, FT_PREFIX"invalid option -- %c\n", c);
 			usage();
 		}
 	}
