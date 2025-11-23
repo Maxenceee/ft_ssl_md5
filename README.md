@@ -2,6 +2,8 @@
 
 My **ft_ssl** project for the 42 school cursus.
 
+Final grade : `125/100`
+
 ## Getting started
 
 You need to compile the project with `make`.
